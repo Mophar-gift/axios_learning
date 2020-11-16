@@ -4,5 +4,9 @@
   "main": "index.js",
   "repository": "https://github.com/Mophar-gift/axios_learning.git",
   "author": "Mophar <1374906297@qq.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1"
+  }
 }

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button onclick="getProducts1()">获取商品列表1</button>
+    <br />
+    <button onclick="getProducts2()">获取商品列表2</button>
+    <br />
+    <button onclick="cancelReq()">取消请求</button>
+    <br />
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.js"></script>
+    <script>
+      /*
+        需求：自动取消未完成的请求
+      */
+      axios.defaults.baseURL = 'http://localhost:4000';
+      // 用于保存取消未请求的函数
+      let cancel;
+
+      // 添加请求拦截器
+      axios.interceptors.request.use(config => {
+        cancel && cancel('请求取消');
+        config.cancelToken = new axios.CancelToken(c => {
+          cancel = c;
+        });
+        return config;
+      });
+
+      // 添加响应拦截器
+      axios.interceptors.response.use(
+        response => {
+          cancel = null;
+          return response;
+        },
+        error => {
+          if (axios.isCancel(error)) {
+            alert('取消请求错误：' + error.message);
+          } else {
+            cancel = null;
+            alert('请求错误：' + error.message);
+          }
+          // 中断promise链（返回pendding状态的promise）
+          return new Promise(() => {});
+        }
+      );
+
+      function getProducts1() {
+        axios('/getProducts1').then(response => {
+          console.log('111 onResolved', response.data);
+        });
+      }
+      function getProducts2() {
+        axios('/getProducts2').then(response => {
+          console.log('222 onResolved', response.data);
+        });
+      }
+      function cancelReq() {
+        // 取消请求
+        cancel && cancel('强制取消');
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>axios的基本使用</title>
+  </head>
+  <body>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.js"></script>
+    <script>
+      axios.defaults.baseURL = 'http://localhost:3000';
+      function testGet() {
+        axios
+          .get(
+            '/posts'
+            // {
+            //   params: {
+            //     id: 3,
+            //   },
+            // }
+          )
+          .then(
+            response => {
+              console.log(response.data, response.status, response.statusText);
+            },
+            error => {
+              console.log(error.message);
+            }
+          );
+      }
+      function testPost() {
+        axios
+          .post('/posts', {
+            title: 'Mophar玉树临风',
+            author: 'DK',
+          })
+          .then(
+            response => {
+              console.log(response.data, response.status, response.statusText);
+            },
+            error => {
+              console.log(error.message);
+            }
+          );
+      }
+      function testPut() {
+        axios
+          .put('/posts/4', {
+            title: 'Mophar风流倜傥',
+            author: 'DK',
+          })
+          .then(
+            response => {
+              console.log(response.data, response.status, response.statusText);
+            },
+            error => {
+              console.log(error.message);
+            }
+          );
+      }
+      function testDelete() {
+        axios.delete('posts/4').then(
+          response => {
+            console.log(response.data, response.status, response.statusText);
+          },
+          error => {
+            console.log(error.message);
+          }
+        );
+        // 当然也可以用request方法，换成这样写：
+        // axios
+        //   .request('/posts/4', {
+        //     method: 'DELETE',
+        //   })
+        //   .then(
+        //     response => {
+        //       console.log(response.data, response.status, response.statusText);
+        //     },
+        //     error => {
+        //       console.log(error.message);
+        //     }
+        //   );
+      }
+    </script>
+
+    <button onclick="testGet()">发送GET请求</button>
+    <br />
+    <button onclick="testPost()">发送POST请求</button>
+    <br />
+    <button onclick="testPut()">发送PUT请求</button>
+    <br />
+    <button onclick="testDelete()">发送DELETE请求</button>
+  </body>
+</html>

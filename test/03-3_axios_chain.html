@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!--  
+      请求拦截器
+        1.是什么？
+          在得到响应后执行的回调函数（在外层的回调之前）。
+        2.作用是什么？
+          - 对请求成功的数据进行处理
+          - 对请求失败的数据进行处理
+    -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.js"></script>
+    <script>
+      axios.defaults.baseURL = 'http://locahost:3000';
+
+      // 添加请求拦截器
+      axios.interceptors.request.use(config => {
+        console.log('request interceptor1 onResolved()');
+        throw 1;
+        return config;
+      });
+      axios.interceptors.request.use(config => {
+        console.log('request interceptor2 onResolved()');
+        return config;
+      });
+
+      // 添加响应拦截器
+      axios.interceptors.response.use(
+        response => {
+          console.log('response interceptor1 onResolved()');
+          return response;
+        },
+        error => {
+          console.log('response interceptor1 onRejected()');
+          return Promise.reject(error);
+        }
+      );
+      axios.interceptors.response.use(
+        response => {
+          console.log('response interceptor2 onResolved()');
+          return response;
+        },
+        error => {
+          console.log('response interceptor2 onRejected()');
+          return Promise.reject(error);
+        }
+      );
+
+      axios({
+        url: '/posts',
+      }).then(
+        response => {
+          console.log('onResolved()');
+        },
+        error => {
+          console.log('onRejected()');
+        }
+      );
+    </script>
+  </body>
+</html>
