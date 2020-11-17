@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>axios的二次封装(基本)</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/nprogress/0.2.0/nprogress.css" rel="stylesheet" />
+  </head>
+  <body>
+    <!--  
+      1.统一进行请求配置
+      2.请求过程中loading提示
+      3.请求体参数以urlencoded形式传递
+      4.请求成功的value不再是response，而是response.data
+      5.请求失败统一进行提示处理，每个请求不需要单独处理
+      6.利用async await优化代码
+    -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/nprogress/0.2.0/nprogress.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/qs/6.9.4/qs.js"></script>
+    <script>
+      // 1.统一进行请求配置
+      const instance = axios.create({
+        baseURL: 'http://localhost:4000', // 指定基础url
+        timeout: 15000, // 指定请求超时时间
+      });
+
+      // 添加请求拦截器
+      instance.interceptors.request.use(config => {
+        // 2-1.请求过程中loading提示
+        // 显示loading
+        NProgress.start();
+        // 对data参数数据进行处理：转换为urlencoded格式（原本是对象）
+        if (config.data instanceof Object) {
+          config.data = Qs.stringify(config.data);
+        }
+        return config;
+      });
+
+      // 添加响应拦截器
+      instance.interceptors.response.use(
+        response => {
+          // 2-2.请求过程中loading提示
+          // 隐藏loading
+          NProgress.done();
+          // 4.请求成功的value不再是response，而是response.data
+          return response.data;
+        },
+        error => {
+          // 5.请求失败统一进行提示处理，每个请求不需要单独处理
+          alert('统一处理请求出错', error.message);
+          // 返回一个pendding状态的promise来中断promise链
+          return new Promise(() => {});
+        }
+      );
+    </script>
+
+    <script>
+      async function getPosts() {
+        const result = await instance.get('/post');
+        console.table(result.data);
+      }
+      async function addPost() {
+        const result = await instance.post('/post', {
+          title: 'newTitle',
+          author: 'newAuthor',
+        });
+        console.table(result.data);
+      }
+    </script>
+
+    <button onclick="getPosts()">获取</button>
+    <button onclick="addPost()">添加</button>
+  </body>
+</html>
